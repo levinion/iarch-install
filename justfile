@@ -14,10 +14,11 @@ install:
   @just set-timezone
   @just set-locale
   @just set-root-password
-  @just change-root
   @just set-pacman
+  @just enable-networkmanager
   @just add-user
-  @just ready-for-reboot
+  @just change-root
+  @just umount-all
 
 enable-ntp:
   timedatectl set-ntp true
@@ -41,7 +42,7 @@ mount-partition:
 
 install-system:
   pacman -S archlinux-keyring
-  pacstrap /mnt base base-devel linux linux-firmware btrfs-progs networkmanager vim sudo git just $shell
+  pacstrap /mnt base base-devel linux linux-firmware btrfs-progs networkmanager vim sudo git $shell
 
 install-ucode:
   #!/usr/bin/bash
@@ -87,13 +88,27 @@ set-root-password:
   arch-chroot /mnt passwd root
 
 add-user:
-  arch-chroot /mnt useradd -m -G wheel -s $shell $username
+  arch-chroot /mnt useradd -m -G wheel -s usr/bin/$shell $username
   arch-chroot /mnt passwd user
   arch-chroot /mnt sed -i.bak '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers
 
 set-pacman:
   vim /mnt/etc/pacman.conf
 
-ready-for-reboot:
-  umount -R /mnt
-  arch-chroot /mnt systemctl enable networkmanager --now
+enable-networkmanager:
+  arch-chroot /mnt systemctl enable NetworkManager.service --now
+
+end-of-basic-installation:
+  #!/usr/bin/bash
+  echo "Basic installation done..."
+  echo ""
+  read -rp "Do you'd like to install i3 with sddm? [y/n]" ctn
+  if [[ "$ctn" == "n" ]]; then
+    echo "Bye, $username. Just enjoy yourself.";
+  else
+    pacstrap /mnt i3-wm sddm
+    arch-chroot /mnt systemctl enable sddm.service --now
+  fi
+
+i3:
+  arch-chroot /mnt
