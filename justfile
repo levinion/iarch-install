@@ -4,6 +4,7 @@ set shell:=["bash","-c"]
 
 install:
   @just enable-ntp
+  @just set-partition
   @just mount-partition
   @just install-system
   @just gen-fstab
@@ -19,11 +20,16 @@ install:
 enable-ntp:
   timedatectl set-ntp true
 
-mount-partition:
+set-partition:
   mkfs.fat -F32 $boot
   mkswap $swap
   mkfs.btrfs -fL $partition_label $root
-  mkdir -p /mnt
+  mount -t btrfs -o compress=zstd $root /mnt
+  btrfs subvolume create /mnt/@
+  btrfs subvolume create /mnt/@home
+  umount /mnt
+
+mount-partition:
   mount -t btrfs -o subvol=/@,compress=zstd $root /mnt
   mkdir -p /mnt/home
   mount -t btrfs -o subvol=/@home,compress=zstd $root /mnt/home
