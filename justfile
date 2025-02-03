@@ -48,11 +48,12 @@ change-root:
   arch-chroot /mnt
 
 set-hosts:
+  #!/usr/bin/bash
   arch-chroot /mnt echo $hostname > /etc/hostname
-  cat > /mnt/etc/hosts << EOF \
-  127.0.0.1 localhost \
-  ::1       localhost \
-  127.0.1.1 $hostname.localdomain $hostname \
+  cat > /mnt/etc/hosts << EOF
+  127.0.0.1 localhost
+  ::1       localhost
+  127.0.1.1 $hostname.localdomain $hostname
   EOF
 
 set-timezone:
