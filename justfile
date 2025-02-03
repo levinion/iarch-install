@@ -79,10 +79,3 @@ ready-for-reboot:
   exit
   umount -R /mnt
   reboot
-
-
-
-
-
-
-
