@@ -7,13 +7,13 @@ install:
   @just set-partition
   @just mount-partition
   @just install-system
+  @just install-ucode
+  @just install-grub
   @just gen-fstab
   @just set-hosts
   @just set-timezone
   @just set-locale
   @just set-root-password
-  @just install-ucode
-  @just install-grub
   @just change-root
   @just ready-for-reboot
 
@@ -41,6 +41,22 @@ install-system:
   pacman -S archlinux-keyring
   pacstrap /mnt base base-devel linux linux-firmware btrfs-progs networkmanager vim sudo git just $shell
 
+install-ucode:
+  #!/usr/bin/bash
+  if [[ "$ucode" == "intel" ]]; then
+  pacstrap /mnt intel-ucode
+  elif [[ "$ucode" == "amd" ]]; then
+  pacstrap /mnt amd-ucode
+  else
+  echo "only support intel or amd";
+  fi
+
+install-grub:
+  pacstrap /mnt grub efibootmgr os-prober
+  arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$bootloader_id
+  arch-chroot /mnt vim /etc/default/grub
+  arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
 gen-fstab:
   genfstab -U /mnt > /mnt/etc/fstab
 
@@ -67,22 +83,6 @@ set-locale:
 
 set-root-password:
   arch-chroot /mnt passwd root
-
-install-ucode:
-  #!/usr/bin/bash
-  if [[ "$ucode" == "intel" ]]; then
-  pacstrap /mnt intel-ucode
-  elif [[ "$ucode" == "amd" ]]; then
-  pacstrap /mnt amd-ucode
-  else
-  echo "only support intel or amd";
-  fi
-
-install-grub:
-  pacstrap /mnt grub efibootmgr os-prober
-  arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$bootloader_id
-  arch-chroot /mnt vim /etc/default/grub
-  arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 ready-for-reboot:
   umount -R /mnt
