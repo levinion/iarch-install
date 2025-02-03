@@ -15,6 +15,8 @@ install:
   @just set-locale
   @just set-root-password
   @just change-root
+  @just set-pacman
+  @just add-user
   @just ready-for-reboot
 
 enable-ntp:
@@ -84,5 +86,14 @@ set-locale:
 set-root-password:
   arch-chroot /mnt passwd root
 
+add-user:
+  arch-chroot /mnt useradd -m -G wheel -s $shell $username
+  arch-chroot /mnt passwd user
+  arch-chroot /mnt sed -i.bak '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers
+
+set-pacman:
+  vim /mnt/etc/pacman.conf
+
 ready-for-reboot:
   umount -R /mnt
+  arch-chroot /mnt systemctl enable networkmanager --now
