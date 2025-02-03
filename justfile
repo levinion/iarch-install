@@ -69,9 +69,9 @@ set-root-password:
 
 install-ucode:
   #!/usr/bin/bash
-  if [[ "$ucode" -eq "intel" ]]; then
+  if [[ "$ucode" == "intel" ]]; then
   pacstrap /mnt intel-ucode
-  elif [[ "$ucode" -eq "amd" ]]; then
+  elif [[ "$ucode" == "amd" ]]; then
   pacstrap /mnt amd-ucode
   else
   echo "only support intel or amd";
