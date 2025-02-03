@@ -23,7 +23,7 @@ mount-partition:
   mkfs.fat -F32 $boot
   mkswap $swap
   mkfs.btrfs -fL $partition_label $root
-  mkdir /mnt
+  -mkdir /mnt
   mount -t btrfs -o subvol=/@,compress=zstd $root /mnt
   mkdir /mnt/home
   mount -t btrfs -o subvol=/@home,compress=zstd $root /mnt/home
