@@ -20,12 +20,9 @@ enable-ntp:
   timedatectl set-ntp true
 
 mount-partition:
-<<<<<<< HEAD
-=======
   mkfs.fat -F32 $boot
   mkswap $swap
   mkfs.btrfs -L $partition_label $root
->>>>>>> 3e1e426 (fix)
   mount -t btrfs -o subvol=/@,compress=zstd $root /mnt
   mkdir /mnt/home
   mount -t btrfs -o subvol=/@home,compress=zstd $root /mnt/home
@@ -49,6 +46,7 @@ set-hosts:
   127.0.0.1 localhost
   ::1       localhost
   127.0.1.1 $hostname.localdomain $hostname
+  EOF
 
 set-timezone:
   ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
