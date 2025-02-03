@@ -68,12 +68,13 @@ set-root-password:
   arch-chroot /mnt passwd root
 
 install-ucode:
-  if [[ "$ucode" -eq "intel" ]]; then \
-  pacstrap /mnt intel-ucode \
-  elif [[ "$ucode" -eq "amd" ]]; then \
-  pacstrap /mnt amd-ucode \
-  else \
-  echo "only support intel or amd"; \
+  #!/usr/bin/bash
+  if [[ "$ucode" -eq "intel" ]]; then
+  pacstrap /mnt intel-ucode
+  elif [[ "$ucode" -eq "amd" ]]; then
+  pacstrap /mnt amd-ucode
+  else
+  echo "only support intel or amd";
   fi
 
 install-grub:
