@@ -8,13 +8,13 @@ install:
   @just mount-partition
   @just install-system
   @just gen-fstab
-  @just change-root
   @just set-hosts
   @just set-timezone
   @just set-locale
   @just set-root-password
   @just install-ucode
   @just install-grub
+  @just change-root
   @just ready-for-reboot
 
 enable-ntp:
@@ -39,7 +39,7 @@ mount-partition:
 
 install-system:
   pacman -S archlinux-keyring
-  pacstrap /mnt base base-devel linux linux-firmware btrfs-progs networkmanager vim sudo $shell
+  pacstrap /mnt base base-devel linux linux-firmware btrfs-progs networkmanager vim sudo git just $shell
 
 gen-fstab:
   genfstab -U /mnt > /mnt/etc/fstab
@@ -48,41 +48,39 @@ change-root:
   arch-chroot /mnt
 
 set-hosts:
-  echo $hostname > /etc/hostname
-  echo > /etc/hosts <<EOF
+  arch-chroot /mnt echo $hostname > /etc/hostname
+  arch-chroot /mnt echo > /etc/hosts <<EOF
   127.0.0.1 localhost
   ::1       localhost
   127.0.1.1 $hostname.localdomain $hostname
   EOF
 
 set-timezone:
-  ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
-  hwclock --systohc
+  arch-chroot /mnt ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
+  arch-chroot /mnt hwclock --systohc
 
 set-locale:
-  vim /etc/locale.gen
-  locale-gen
-  echo 'LANG=en_US.UTF-8'  > /etc/locale.conf
+  arch-chroot /mnt vim /etc/locale.gen
+  arch-chroot /mnt locale-gen
+  arch-chroot /mnt echo 'LANG=en_US.UTF-8'  > /etc/locale.conf
 
 set-root-password:
-  passwd root
+  arch-chroot /mnt passwd root
 
 install-ucode:
   if [[ "$ucode" -eq "intel" ]]; then
-  pacman -S intel-ucode
+  pacstrap /mnt intel-ucode
   elif [[ "$ucode" -eq "amd" ]]; then
-  pacman -S amd-ucode
+  pacstrap /mnt amd-ucode
   else
   echo "only support intel or amd";
   fi
 
 install-grub:
-  pacman -S grub efibootmgr os-prober
-  grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$bootloader_id
-  vim /etc/default/grub
-  grub-mkconfig -o /boot/grub/grub.cfg
+  pacstrap /mnt grub efibootmgr os-prober
+  arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$bootloader_id
+  arch-chroot /mnt vim /etc/default/grub
+  arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 ready-for-reboot:
-  exit
   umount -R /mnt
-  reboot
