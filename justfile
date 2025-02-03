@@ -49,6 +49,11 @@ change-root:
 
 set-hosts:
   arch-chroot /mnt echo $hostname > /etc/hostname
+  cat > /mnt/etc/hosts << EOF \
+  127.0.0.1 localhost \
+  ::1       localhost \
+  127.0.1.1 $hostname.localdomain $hostname \
+  EOF
 
 set-timezone:
   arch-chroot /mnt ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
@@ -63,12 +68,12 @@ set-root-password:
   arch-chroot /mnt passwd root
 
 install-ucode:
-  if [[ "$ucode" -eq "intel" ]]; then
-  pacstrap /mnt intel-ucode
-  elif [[ "$ucode" -eq "amd" ]]; then
-  pacstrap /mnt amd-ucode
-  else
-  echo "only support intel or amd";
+  if [[ "$ucode" -eq "intel" ]]; then \
+  pacstrap /mnt intel-ucode \
+  elif [[ "$ucode" -eq "amd" ]]; then \
+  pacstrap /mnt amd-ucode \
+  else \
+  echo "only support intel or amd"; \
   fi
 
 install-grub:
