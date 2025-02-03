@@ -20,9 +20,9 @@ enable-ntp:
   timedatectl set-ntp true
 
 mount-partition:
-  mkfs.fat -F32 $boot -f
-  mkswap $swap -f
-  mkfs.btrfs -L $partition_label $root -f
+  mkfs.fat -F32 $boot
+  mkswap $swap
+  mkfs.btrfs -fL $partition_label $root
   mkdir /mnt
   mount -t btrfs -o subvol=/@,compress=zstd $root /mnt
   mkdir /mnt/home
