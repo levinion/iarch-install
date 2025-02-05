@@ -15,7 +15,6 @@ def process(config: dict[str, Any]):
     check_config(config)
     enable_ntp()
     setup_tmp_network(config)
-    setup_keyring()
     format_partition(config)
     mount_partition(config)
     setup_system(config)
@@ -24,11 +23,6 @@ def process(config: dict[str, Any]):
 
 def check_config(config: dict[str, Any]):
     pass
-
-
-def setup_keyring():
-    os.system("pacman-key --init")
-    os.system("pacman-key --populate")
 
 
 def enable_ntp():
