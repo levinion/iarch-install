@@ -18,6 +18,7 @@ def process(config: dict[str, Any]):
     format_partition(config)
     mount_partition(config)
     setup_system(config)
+    umount()
     pass
 
 
@@ -170,6 +171,10 @@ def enable_archlinuxcn():
 def enable_services(config: dict[str, Any]):
     for service in config["os"]["enabled_services"]:
         os.system(f"systemctl enable {service}")
+
+
+def umount():
+    os.system("umount -R /mnt")
 
 
 # tool functions
