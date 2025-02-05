@@ -75,6 +75,7 @@ def setup_system(config: dict[str, Any]):
     setup_network(config)
     setup_root()
     setup_user(config)
+    enable_services(config)
 
 
 def setup_packages(config: dict[str, Any]):
@@ -164,6 +165,11 @@ def enable_archlinuxcn():
         "[archlinuxcn]", "Server = https://repo.archlinuxcn.org/$arch"
     )
     append_file("/mnt/etc/pacman.conf", content)
+
+
+def enable_services(config: dict[str, Any]):
+    for service in config["os"]["enabled_services"]:
+        os.system(f"systemctl enable {service}")
 
 
 # tool functions
