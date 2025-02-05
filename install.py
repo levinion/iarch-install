@@ -105,7 +105,7 @@ def setup_timezone(config: dict[str, Any]):
 
 def setup_locale(config: dict[str, Any]):
     lang = config["os"]["lang"]
-    locale = multiline_str(config["os"]["locale"])
+    locale = multiline_str(*config["os"]["locale"])
     append_file("/etc/locale.gen", locale)
     os.system("arch-chroot /mnt locale-gen")
     os.system(f"arch-chroot /mnt echo 'LANG={lang}' > /etc/locale.conf")
