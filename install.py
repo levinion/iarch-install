@@ -170,7 +170,7 @@ def enable_archlinuxcn():
 
 def enable_services(config: dict[str, Any]):
     for service in config["os"]["enabled_services"]:
-        os.system(f"systemctl enable {service}")
+        os.system(f"arch-chroot /mnt systemctl enable {service}")
 
 
 def umount():
