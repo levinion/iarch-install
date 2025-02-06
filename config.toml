@@ -20,7 +20,7 @@ packages = [
   "sudo",
   "git",
   "fish",
-  "amd-ucode",      # amd-ucode or intel-ucode
+  "amd-ucode",           # amd-ucode or intel-ucode
   "grub",
   "efibootmgr",
   "os-prober",
@@ -29,6 +29,7 @@ packages = [
   "i3",
   "sddm",
   "fcitx5",
+  "archlinuxcn-keyring",
 ]
 enabled_services = ["NetworkManager.service", "sddm.service"]
 hostname = "archlinux"
