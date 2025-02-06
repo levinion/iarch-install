@@ -16,7 +16,7 @@ packages = [
   "linux-firmware",
   "btrfs-progs",
   "networkmanager",
-  "vim ",
+  "vim",
   "sudo",
   "git",
   "fish",

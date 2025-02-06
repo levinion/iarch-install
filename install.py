@@ -23,7 +23,17 @@ def process(config: dict[str, Any]):
 
 
 def check_config(config: dict[str, Any]):
-    pass
+    if config["user"]["shell"] not in config["os"]["packages"]:
+        print("[CONFIG_ERROR] user.shell is not included in os.packages.")
+        exit(0)
+    if (
+        not config["grub"]["disable_os_prober"]
+        and "os-prober" not in config["os"]["packages"]
+    ):
+        print(
+            "[CONFIG_ERROR] grub.disable_os_prober is false, but os-prober is not included in os.packages."
+        )
+        exit(0)
 
 
 def enable_ntp():
@@ -145,7 +155,8 @@ def setup_network(config: dict[str, Any]):
     mirrors: list[str] = [
         f"Server = {mirror}" for mirror in config["network"]["mirrors"]
     ]
-    write_file("/mnt/etc/pacman.d/mirrorlist", multiline_str(*mirrors))
+    if len(mirrors) != 0:
+        write_file("/mnt/etc/pacman.d/mirrorlist", multiline_str(*mirrors))
 
 
 def setup_pacman(config: dict[str, Any]):
@@ -180,7 +191,7 @@ def umount():
 
 
 def multiline_str(*s: str) -> str:
-    return "\n".join(s)
+    return "\n".join(s) + "\n"
 
 
 def write_file(filename, content):
