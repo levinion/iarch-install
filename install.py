@@ -34,14 +34,6 @@ def check_config(config: dict[str, Any]):
             "[CONFIG_ERROR] grub.disable_os_prober is false, but os-prober is not included in os.packages."
         )
         exit(0)
-    if (
-        config["pacman"]["archlinuxcn"]
-        and "archlinuxcn-keyring" not in config["os"]["packages"]
-    ):
-        print(
-            "[CONFIG_ERROR] pacman.disable_os_prober is true, but archlinuxcn-keyring is not included in os.packages."
-        )
-        exit(0)
 
 
 def enable_ntp():
