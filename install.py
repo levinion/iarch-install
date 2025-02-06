@@ -114,6 +114,7 @@ def setup_locale(config: dict[str, Any]):
 
 
 def setup_root():
+    print("password for root: ")
     os.system("arch-chroot /mnt passwd root")
 
 
@@ -121,10 +122,8 @@ def setup_user(config: dict[str, Any]):
     username = config["user"]["name"]
     shell = config["user"]["shell"]
     os.system(f"arch-chroot /mnt useradd -m -G wheel -s /usr/bin/{shell} {username}")
+    print(f"password for {username}: ")
     os.system(f"arch-chroot /mnt passwd {username}")
-    os.system(
-        "arch-chroot /mnt sed -i.bak '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers"
-    )
     append_file("/mnt/etc/sudoers", "%wheel ALL=(ALL:ALL) ALL")
 
 
