@@ -28,7 +28,7 @@ packages = [
   "rofi",
   "i3",
   "sddm",
-  "fcitx5",
+  "fcitx5-im",
 ]
 enabled_services = ["NetworkManager.service", "sddm.service"]
 hostname = "archlinux"
