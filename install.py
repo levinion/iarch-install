@@ -3,15 +3,27 @@
 import os
 import tomllib
 from typing import Any
+import sys
+
+
+def read_config():
+    with open("./config.toml", "rb") as f:
+        config = tomllib.load(f)
+        return config
 
 
 def main():
-    with open("./config.toml", "rb") as f:
-        config = tomllib.load(f)
-        process(config)
+    config = read_config()
+    if len(sys.argv) == 2:
+        if sys.argv[1] == "mount":
+            mount_partition(config)
+        elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
+            print_help()
+    else:
+        install(config)
 
 
-def process(config: dict[str, Any]):
+def install(config: dict[str, Any]):
     check_config(config)
     enable_ntp()
     setup_tmp_network(config)
@@ -202,6 +214,21 @@ def write_file(filename, content):
 def append_file(filename, content):
     with open(filename, "a") as f:
         f.write(content)
+
+
+def print_help():
+    print("Usage: arch-install [COMMAND]")
+    print("")
+    print("Commands:")
+    print(
+        "  (no arguments)    Execute the installation process based on the config.toml file in the current directory."
+    )
+    print(
+        "  mount             Partition and mount disks according to the configuration file."
+    )
+    print("")
+    print("Options:")
+    print("  -h, --help        Show this help message and exit.")
 
 
 if __name__ == "__main__":
