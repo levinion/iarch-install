@@ -223,9 +223,7 @@ def print_help():
     print(
         "  (no arguments)    Execute the installation process based on the config.toml file in the current directory."
     )
-    print(
-        "  mount             Partition and mount disks according to the configuration file."
-    )
+    print("  mount             Mount disks according to the configuration file.")
     print("")
     print("Options:")
     print("  -h, --help        Show this help message and exit.")
