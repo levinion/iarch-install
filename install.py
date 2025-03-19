@@ -63,11 +63,15 @@ def setup_tmp_network(config: dict[str, Any]):
 
 def format_partition(config: dict[str, Any]):
     boot = config["partition"]["boot"]
-    swap = config["partition"]["swap"]
+    enable_swap = config["partition"]["enable_swap"]
+    swap = ""
+    if enable_swap:
+        swap = config["partition"]["swap"]
     root = config["partition"]["root"]
     label = config["partition"]["label"]
     os.system(f"mkfs.fat -F32 {boot}")
-    os.system(f"mkswap {swap}")
+    if enable_swap:
+        os.system(f"mkswap {swap}")
     os.system(f"mkfs.btrfs -fL {label} {root}")
     os.system(f"mount -t btrfs -o compress=zstd {root} /mnt")
     os.system("btrfs subvolume create /mnt/@")
@@ -77,14 +81,18 @@ def format_partition(config: dict[str, Any]):
 
 def mount_partition(config: dict[str, Any]):
     boot = config["partition"]["boot"]
-    swap = config["partition"]["swap"]
+    swap = ""
+    enable_swap = config["partition"]["enable_swap"]
+    if enable_swap:
+        swap = config["partition"]["swap"]
     root = config["partition"]["root"]
     os.system(f"mount -t btrfs -o subvol=/@,compress=zstd {root} /mnt")
     os.system("mkdir -p /mnt/home")
     os.system(f"mount -t btrfs -o subvol=/@home,compress=zstd {root} /mnt/home")
     os.system("mkdir -p /mnt/boot")
     os.system(f"mount {boot} /mnt/boot")
-    os.system(f"swapon {swap}")
+    if enable_swap:
+        os.system(f"swapon {swap}")
 
 
 def setup_system(config: dict[str, Any]):
