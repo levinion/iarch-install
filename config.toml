@@ -1,50 +1,54 @@
 [partition]
 boot = "/dev/sda1"
+# if you don't like to have a swap partition, set this off
 enable_swap = true
+# if swap is not enabled, this will be ignored
 swap = "/dev/sda2"
 root = "/dev/sda3"
-
 label = "archlinux"
 
 [network]
+# disable reflector service
 reflector = false
+# use this mirror both in installation and after installation 
 mirrors = ["https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch"]
 
 [os]
-enabled_services = [
-  "NetworkManager.service",
-  #"sddm.service"
-]
+#services listed below will be enabled on the end of installation
+enabled_services = ["NetworkManager.service", "sddm.service"]
 hostname = "archlinux"
 timezone = "Asia/Shanghai"
 locale = ["en_US.UTF-8 UTF-8", "zh_CN.UTF-8 UTF-8"]
 lang = "en_US.UTF-8"
-
-[user]
 packages = [
   "base",
   "base-devel",
-  "linux",
+  "linux",          # replace it with linux-zen if you prefer that
+  "linux-headers",  # replace it with linux-zen-headers if you prefer that
   "linux-firmware",
   "btrfs-progs",
   "networkmanager",
   "vim",
   "sudo",
   "git",
-  "fish",
+  "zsh",            # your preferred shell: zsh, fish, nushell, ... (bash is not needed here)
   "amd-ucode",      # amd-ucode or intel-ucode
   "grub",
   "efibootmgr",
-  "os-prober",
+  "os-prober",      # os-prober is a must when there are multiple system in your disks
   "fcitx5-im",
   "python",
-  #"alacritty",
-  #"rofi",
-  #"i3-wm",
-  #"sddm",
+
+  # -- [optional] --
+  "alacritty", # alacritty is a fast terminal. You could also replace it with kitty, foot, wezterm, etc.
+  "rofi",      # rofi is an application laucher
+  "i3-wm",     # i3 is a window manager under X11
+  "sddm",      # sddm is a desktop manager
 ]
-name = "admin"
-shell = "fish"
+
+[user]
+name = "username" # replace with your username
+shell = "zsh"     # your preferred shell (must be added to packages)
 
 [pacman]
 multilib = true
