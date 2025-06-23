@@ -3,7 +3,7 @@
 import os
 import tomllib
 from typing import Any
-import sys
+import argparse
 
 
 def read_config():
@@ -14,13 +14,23 @@ def read_config():
 
 def main():
     config = read_config()
-    if len(sys.argv) == 2:
-        if sys.argv[1] == "mount":
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="command")
+    subparsers.add_parser(
+        "install",
+        help="Execute the installation process based on the config.toml file in the current directory.",
+    )
+    subparsers.add_parser(
+        "mount", help="Mount disks according to the configuration file."
+    )
+    args = parser.parse_args()
+    match args.command:
+        case "mount":
             mount_partition(config)
-        elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
-            print_help()
-    else:
-        install(config)
+        case "install":
+            install(config)
+        case _:
+            parser.print_help()
 
 
 def install(config: dict[str, Any]):
@@ -31,13 +41,16 @@ def install(config: dict[str, Any]):
     mount_partition(config)
     setup_system(config)
     umount()
-    pass
+    complete_hint()
+
+
+def complete_hint():
+    print(
+        "Installation is done. Now you could reboot and load to your desktop. Don't forget to install archlinuxcn-keyring if you are using archlinuxcn."
+    )
 
 
 def check_config(config: dict[str, Any]):
-    if config["user"]["shell"] not in config["os"]["packages"]:
-        print("[CONFIG_ERROR] user.shell is not included in os.packages.")
-        exit(0)
     if (
         not config["grub"]["disable_os_prober"]
         and "os-prober" not in config["os"]["packages"]
@@ -45,7 +58,7 @@ def check_config(config: dict[str, Any]):
         print(
             "[CONFIG_ERROR] grub.disable_os_prober is false, but os-prober is not included in os.packages."
         )
-        exit(0)
+        exit(1)
 
 
 def enable_ntp():
@@ -62,14 +75,14 @@ def setup_tmp_network(config: dict[str, Any]):
 
 
 def format_partition(config: dict[str, Any]):
-    boot = config["partition"]["boot"]
+    efi = config["partition"]["efi"]
     enable_swap = config["partition"]["enable_swap"]
     swap = ""
     if enable_swap:
         swap = config["partition"]["swap"]
     root = config["partition"]["root"]
     label = config["partition"]["label"]
-    os.system(f"mkfs.fat -F32 {boot}")
+    os.system(f"mkfs.fat -F32 {efi}")
     if enable_swap:
         os.system(f"mkswap {swap}")
     os.system(f"mkfs.btrfs -fL {label} {root}")
@@ -80,17 +93,17 @@ def format_partition(config: dict[str, Any]):
 
 
 def mount_partition(config: dict[str, Any]):
-    boot = config["partition"]["boot"]
+    efi = config["partition"]["efi"]
     swap = ""
     enable_swap = config["partition"]["enable_swap"]
     if enable_swap:
         swap = config["partition"]["swap"]
     root = config["partition"]["root"]
-    os.system(f"mount -t btrfs -o subvol=/@,compress=zstd {root} /mnt")
+    os.system(f"mount -t btrfs -o subvol=/@,compress=zstd:1 {root} /mnt")
     os.system("mkdir -p /mnt/home")
-    os.system(f"mount -t btrfs -o subvol=/@home,compress=zstd {root} /mnt/home")
-    os.system("mkdir -p /mnt/boot")
-    os.system(f"mount {boot} /mnt/boot")
+    os.system(f"mount -t btrfs -o subvol=/@home,compress=zstd:1 {root} /mnt/home")
+    os.system("mkdir -p /mnt/efi")
+    os.system(f"mount {efi} /mnt/efi")
     if enable_swap:
         os.system(f"swapon {swap}")
 
@@ -111,6 +124,8 @@ def setup_system(config: dict[str, Any]):
 
 def setup_packages(config: dict[str, Any]):
     packages_: list[str] = config["os"]["packages"]
+    if config["user"]["shell"] not in packages_:
+        packages_.append(config["user"]["shell"])
     packages = " ".join(packages_)
     os.system(f"pacstrap /mnt {packages}")
 
@@ -118,7 +133,7 @@ def setup_packages(config: dict[str, Any]):
 def setup_grub(config: dict[str, Any]):
     bootloader_id = config["grub"]["bootloader_id"]
     os.system(
-        f"arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id={bootloader_id}"
+        f"arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id={bootloader_id}"
     )
     if not config["grub"]["disable_os_prober"]:
         append_file("/mnt/etc/default/grub", "GRUB_DISABLE_OS_PROBER=false")
@@ -165,8 +180,7 @@ def setup_hosts(config: dict[str, Any]):
         "::1       localhost",
         f"127.0.1.1 {hostname}.localdomain {hostname}",
     )
-    with open("/mnt/etc/hosts", "w") as f:
-        f.write(content)
+    write_file("/mnt/etc/hosts", content)
 
 
 def setup_network(config: dict[str, Any]):
@@ -222,19 +236,6 @@ def write_file(filename, content):
 def append_file(filename, content):
     with open(filename, "a") as f:
         f.write(content)
-
-
-def print_help():
-    print("Usage: arch-install [COMMAND]")
-    print("")
-    print("Commands:")
-    print(
-        "  (no arguments)    Execute the installation process based on the config.toml file in the current directory."
-    )
-    print("  mount             Mount disks according to the configuration file.")
-    print("")
-    print("Options:")
-    print("  -h, --help        Show this help message and exit.")
 
 
 if __name__ == "__main__":

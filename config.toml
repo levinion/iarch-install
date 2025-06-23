@@ -1,11 +1,9 @@
 [partition]
-boot = "/dev/sda1"
-# if you don't like to have a swap partition, set this off
-enable_swap = true
-# if swap is not enabled, this will be ignored
-swap = "/dev/sda2"
+efi = "/dev/sda1"   # use /efi partition instead of /boot/efi
+enable_swap = true  # if you don't want to have a swap partition, set this false
+swap = "/dev/sda2"  # if swap is not enabled, this will be ignored
 root = "/dev/sda3"
-label = "archlinux"
+label = "archlinux" # btrfs label
 
 [network]
 # disable reflector service
@@ -48,7 +46,7 @@ packages = [
 
 [user]
 name = "username" # replace with your username
-shell = "zsh"     # your preferred shell (must be added to packages)
+shell = "zsh"     # your preferred shell
 
 [pacman]
 multilib = true
