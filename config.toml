@@ -4,6 +4,7 @@ enable_swap = true  # if you don't want to have a swap partition, set this false
 swap = "/dev/sda2"  # if swap is not enabled, this will be ignored
 root = "/dev/sda3"
 label = "archlinux" # btrfs label
+compress = "zstd:1" # btrfs compress
 
 [network]
 # disable reflector service
