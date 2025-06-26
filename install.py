@@ -90,6 +90,7 @@ def format_partition(config: dict[str, Any]):
     os.system(f"mount -t btrfs -o compress={compress} {root} /mnt")
     os.system("btrfs subvolume create /mnt/@")
     os.system("btrfs subvolume create /mnt/@home")
+    os.system("btrfs subvolume create /mnt/@snapshots")
     os.system("umount /mnt")
 
 
@@ -104,6 +105,10 @@ def mount_partition(config: dict[str, Any]):
     os.system(f"mount -t btrfs -o subvol=/@,compress={compress} {root} /mnt")
     os.system("mkdir -p /mnt/home")
     os.system(f"mount -t btrfs -o subvol=/@home,compress={compress} {root} /mnt/home")
+    os.system("mkdir -p /mnt/snapshots")
+    os.system(
+        f"mount -t btrfs -o subvol=/@snapshots,compress={compress} {root} /mnt/snapshots"
+    )
     os.system("mkdir -p /mnt/efi")
     os.system(f"mount {efi} /mnt/efi")
     if enable_swap:
