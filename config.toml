@@ -39,10 +39,11 @@ packages = [
   "python",
 
   # -- [optional] --
-  "alacritty", # alacritty is a fast terminal. You could also replace it with kitty, foot, wezterm, etc.
-  "rofi",      # rofi is an application laucher
-  "i3-wm",     # i3 is a window manager under X11
-  "ly",        # ly is a tui display manager
+  "alacritty",   # alacritty is a fast terminal. You could also replace it with kitty, foot, wezterm, etc.
+  "rofi",        # rofi is an application laucher
+  "i3-wm",       # i3 is a window manager under X11
+  "xorg-server", # needed by i3
+  "ly",          # ly is a tui display manager
 ]
 
 [user]
