@@ -1,10 +1,10 @@
 [partition]
-efi = "/dev/sda1"   # use /efi partition instead of /boot/efi
-enable_swap = true  # if you don't want to have a swap partition, set this false
-swap = "/dev/sda2"  # if swap is not enabled, this will be ignored
+efi = "/dev/sda1"    # which partition is /efi on 
+enable_swap = true   # if you don't want to have a swap partition, set this false
+swap = "/dev/sda2"   # if swap is not enabled, this will be ignored
 root = "/dev/sda3"
-label = "archlinux" # btrfs label
-compress = "zstd:1" # btrfs compress
+label = "archlinux"  # btrfs label
+compress = "zstd:-5" # btrfs compress, zstd:-5(fastest)/1(fast)/3(default) is recommended
 
 [network]
 # disable reflector service
@@ -14,7 +14,7 @@ mirrors = ["https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch"]
 
 [os]
 #services listed below will be enabled on the end of installation
-enabled_services = ["NetworkManager.service", "sddm.service"]
+enabled_services = ["NetworkManager.service", "ly.service"]
 hostname = "archlinux"
 timezone = "Asia/Shanghai"
 locale = ["en_US.UTF-8 UTF-8", "zh_CN.UTF-8 UTF-8"]
@@ -42,7 +42,7 @@ packages = [
   "alacritty", # alacritty is a fast terminal. You could also replace it with kitty, foot, wezterm, etc.
   "rofi",      # rofi is an application laucher
   "i3-wm",     # i3 is a window manager under X11
-  "sddm",      # sddm is a desktop manager
+  "ly",        # ly is a tui display manager
 ]
 
 [user]
