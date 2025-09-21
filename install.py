@@ -45,9 +45,7 @@ def install(config: dict[str, Any]):
 
 
 def complete_hint():
-    print(
-        "Installation is done. Now you could reboot and load to your desktop. Don't forget to install archlinuxcn-keyring if you are using archlinuxcn."
-    )
+    print("Installation is done. Now you could reboot and load to your desktop.")
 
 
 def check_config(config: dict[str, Any]):
@@ -217,6 +215,8 @@ def enable_archlinuxcn():
         "[archlinuxcn]", "Server = https://repo.archlinuxcn.org/$arch"
     )
     append_file("/mnt/etc/pacman.conf", content)
+    os.system("arch-chroot /mnt pacman -Syyuu")
+    os.system("arch-chroot /mnt pacman -S archlinuxcn-keyring")
 
 
 def enable_services(config: dict[str, Any]):
