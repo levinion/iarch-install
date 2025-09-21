@@ -134,7 +134,7 @@ def setup_packages(config: dict[str, Any]):
     if config["user"]["shell"] not in packages_:
         packages_.append(config["user"]["shell"])
     packages = " ".join(packages_)
-    os.system(f"pacstrap /mnt {packages}")
+    os.system(f"pacstrap -K /mnt {packages}")
 
 
 def setup_grub(config: dict[str, Any]):
