@@ -215,8 +215,6 @@ def enable_archlinuxcn():
         "[archlinuxcn]", "Server = https://repo.archlinuxcn.org/$arch"
     )
     append_file("/mnt/etc/pacman.conf", content)
-    os.system("arch-chroot /mnt pacman -Syyuu")
-    os.system("arch-chroot /mnt pacman -S archlinuxcn-keyring")
 
 
 def enable_services(config: dict[str, Any]):
